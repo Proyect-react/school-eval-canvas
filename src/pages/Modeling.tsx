@@ -17,6 +17,7 @@ import { Progress } from "@/components/ui/progress";
 
 export default function Modeling() {
   const [model, setModel] = useState("");
+  const [targetVariable, setTargetVariable] = useState("");
   const [epochs, setEpochs] = useState([100]);
   const [learningRate, setLearningRate] = useState([0.001]);
   const [isTraining, setIsTraining] = useState(false);
@@ -171,14 +172,43 @@ export default function Modeling() {
       </div>
 
       <Card className="p-6">
-        <h3 className="mb-4 text-lg font-semibold">Features para el Modelo</h3>
-        <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
-          {["Calificación Anterior", "Asistencia", "Participación", "Tareas Entregadas", "Exámenes", "Proyectos", "Comportamiento", "Tiempo de Estudio"].map((feature) => (
-            <div key={feature} className="flex items-center space-x-2 rounded-lg border border-border bg-card p-3">
-              <input type="checkbox" defaultChecked className="rounded" />
-              <span className="text-sm font-medium">{feature}</span>
-            </div>
-          ))}
+        <h3 className="mb-6 text-lg font-semibold">Configuración de Variables</h3>
+        
+        <div className="mb-6 space-y-2">
+          <Label htmlFor="target-variable" className="text-base font-semibold">
+            Variable Objetivo a Predecir
+          </Label>
+          <p className="text-sm text-muted-foreground mb-3">
+            Selecciona la variable que el modelo debe aprender a predecir
+          </p>
+          <Select value={targetVariable} onValueChange={setTargetVariable}>
+            <SelectTrigger id="target-variable" className="bg-primary/5 border-primary/20">
+              <SelectValue placeholder="Selecciona la variable objetivo" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="calificacion-final">Calificación Final</SelectItem>
+              <SelectItem value="aprobado">Aprobado/Reprobado</SelectItem>
+              <SelectItem value="calificacion-siguiente">Calificación Siguiente Periodo</SelectItem>
+              <SelectItem value="riesgo-desercion">Riesgo de Deserción</SelectItem>
+              <SelectItem value="nivel-rendimiento">Nivel de Rendimiento</SelectItem>
+              <SelectItem value="promedio-final">Promedio Final</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="border-t border-border pt-6">
+          <h4 className="mb-4 text-base font-semibold">Features (Variables Predictoras)</h4>
+          <p className="text-sm text-muted-foreground mb-4">
+            Selecciona las características que el modelo usará para hacer predicciones
+          </p>
+          <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
+            {["Calificación Anterior", "Asistencia", "Participación", "Tareas Entregadas", "Exámenes", "Proyectos", "Comportamiento", "Tiempo de Estudio"].map((feature) => (
+              <div key={feature} className="flex items-center space-x-2 rounded-lg border border-border bg-card p-3 transition-all hover:shadow-soft hover:border-primary/30">
+                <input type="checkbox" defaultChecked className="rounded border-primary/30 text-primary focus:ring-primary" />
+                <span className="text-sm font-medium">{feature}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </Card>
     </div>
