@@ -25,7 +25,6 @@ import {
   AlertTriangle, 
   CheckCircle2, 
   RefreshCw,
-  Upload,
   FileText
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -44,29 +43,10 @@ export default function DataCleaning() {
   const [columns, setColumns] = useState<string[]>(["id", "nombre", "calif1", "calif2", "calif3", "asistencia"]);
   const [fillMissing, setFillMissing] = useState(false);
   const [removeOutliers, setRemoveOutliers] = useState(false);
-  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [selectedFile, setSelectedFile] = useState<string>("");
   const { toast } = useToast();
   const { uploadedFiles } = useFileContext();
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file && file.name.endsWith('.csv')) {
-      setUploadedFile(file);
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const text = event.target?.result as string;
-        parseCSV(text);
-      };
-      reader.readAsText(file);
-    } else {
-      toast({
-        title: "Error",
-        description: "Por favor selecciona un archivo CSV válido",
-        variant: "destructive"
-      });
-    }
-  };
 
   const parseCSV = (text: string) => {
     const lines = text.trim().split('\n');
@@ -103,7 +83,7 @@ export default function DataCleaning() {
     setData(parsedData);
     toast({
       title: "Archivo cargado",
-      description: `${parsedData.length} registros cargados desde ${uploadedFile?.name}`,
+      description: `${parsedData.length} registros cargados exitosamente`,
     });
   };
 
@@ -152,83 +132,49 @@ export default function DataCleaning() {
             <FileText className="h-5 w-5 text-primary" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold">Seleccionar Archivo</h3>
-            <p className="text-sm text-muted-foreground">Elige un CSV de tus archivos cargados o sube uno nuevo</p>
+            <h3 className="text-lg font-semibold">Seleccionar Archivo CSV</h3>
+            <p className="text-sm text-muted-foreground">Elige un archivo de los previamente cargados</p>
           </div>
         </div>
 
-        <div className="space-y-4">
-          {uploadedFiles.length > 0 && (
-            <div>
-              <Label htmlFor="file-select" className="mb-2 block">Archivos disponibles</Label>
-              <Select value={selectedFile} onValueChange={(value) => {
-                setSelectedFile(value);
-                const file = uploadedFiles.find(f => f.file.name === value);
-                if (file) {
-                  const reader = new FileReader();
-                  reader.onload = (event) => {
-                    const text = event.target?.result as string;
-                    parseCSV(text);
-                  };
-                  reader.readAsText(file.file);
-                }
-              }}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecciona un archivo CSV" />
-                </SelectTrigger>
-                <SelectContent>
-                  {uploadedFiles
-                    .filter(f => f.file.name.endsWith('.csv'))
-                    .map((f) => (
-                      <SelectItem key={f.file.name} value={f.file.name}>
-                        <div className="flex items-center gap-2">
-                          <FileText className="h-4 w-4" />
-                          <span>{f.file.name}</span>
-                          <span className="text-xs text-muted-foreground">
-                            ({(f.file.size / 1024).toFixed(1)} KB)
-                          </span>
-                        </div>
-                      </SelectItem>
-                    ))}
-                </SelectContent>
-              </Select>
-            </div>
-          )}
-
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">
-                O sube uno nuevo
-              </span>
-            </div>
-          </div>
-
-          <div className="flex min-h-[120px] cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-border bg-muted/30 p-6 transition-colors hover:border-primary hover:bg-muted/50">
-            <Upload className="mb-2 h-8 w-8 text-muted-foreground" />
-            <Label htmlFor="csv-upload" className="cursor-pointer text-center">
-              <span className="text-sm font-medium">Haz clic para seleccionar CSV</span>
-              <br />
-              <span className="text-xs text-muted-foreground">o usa datos de ejemplo</span>
-            </Label>
-            <Input
-              id="csv-upload"
-              type="file"
-              accept=".csv"
-              className="hidden"
-              onChange={handleFileUpload}
-            />
-          </div>
-
-          {uploadedFile && (
-            <div className="rounded-lg bg-muted p-3">
-              <p className="text-sm font-medium">{uploadedFile.name}</p>
-              <p className="text-xs text-muted-foreground">
-                {(uploadedFile.size / 1024).toFixed(2)} KB
-              </p>
-            </div>
+        <div>
+          <Label htmlFor="file-select" className="mb-2 block">Archivos disponibles</Label>
+          <Select value={selectedFile} onValueChange={(value) => {
+            setSelectedFile(value);
+            const file = uploadedFiles.find(f => f.file.name === value);
+            if (file) {
+              const reader = new FileReader();
+              reader.onload = (event) => {
+                const text = event.target?.result as string;
+                parseCSV(text);
+              };
+              reader.readAsText(file.file);
+            }
+          }}>
+            <SelectTrigger>
+              <SelectValue placeholder="Selecciona un archivo CSV" />
+            </SelectTrigger>
+            <SelectContent>
+              {uploadedFiles
+                .filter(f => f.file.name.endsWith('.csv'))
+                .map((f) => (
+                  <SelectItem key={f.file.name} value={f.file.name}>
+                    <div className="flex items-center gap-2">
+                      <FileText className="h-4 w-4" />
+                      <span>{f.file.name}</span>
+                      <span className="text-xs text-muted-foreground">
+                        ({(f.file.size / 1024).toFixed(1)} KB)
+                      </span>
+                    </div>
+                  </SelectItem>
+                ))}
+            </SelectContent>
+          </Select>
+          
+          {uploadedFiles.filter(f => f.file.name.endsWith('.csv')).length === 0 && (
+            <p className="mt-2 text-sm text-muted-foreground">
+              No hay archivos CSV cargados. Ve a "Cargar Datos" para subir archivos.
+            </p>
           )}
         </div>
       </Card>
