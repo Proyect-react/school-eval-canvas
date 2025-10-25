@@ -37,6 +37,16 @@ export default function DataCleaning() {
     return acc + (row.calif1 === null ? 1 : 0) + (row.calif2 === null ? 1 : 0) + (row.calif3 === null ? 1 : 0);
   }, 0);
 
+  const getRowStatus = (row: typeof sampleData[0]) => {
+    const hasNullInNumericColumns = 
+      row.calif1 === null || 
+      row.calif2 === null || 
+      row.calif3 === null || 
+      row.asistencia === null;
+    
+    return hasNullInNumericColumns ? "Inactivo" : "Activo";
+  };
+
   const handleClean = () => {
     toast({
       title: "Limpieza aplicada",
@@ -98,37 +108,49 @@ export default function DataCleaning() {
                 <TableHead>Calificación 2</TableHead>
                 <TableHead>Calificación 3</TableHead>
                 <TableHead>Asistencia %</TableHead>
+                <TableHead>Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {data.map((row) => (
-                <TableRow key={row.id}>
-                  <TableCell className="font-medium">{row.id}</TableCell>
-                  <TableCell>{row.nombre}</TableCell>
-                  <TableCell>
-                    {row.calif1 === null ? (
-                      <span className="text-accent">NULL</span>
-                    ) : (
-                      row.calif1
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    {row.calif2 === null ? (
-                      <span className="text-accent">NULL</span>
-                    ) : (
-                      row.calif2
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    {row.calif3 === null ? (
-                      <span className="text-accent">NULL</span>
-                    ) : (
-                      row.calif3
-                    )}
-                  </TableCell>
-                  <TableCell>{row.asistencia}%</TableCell>
-                </TableRow>
-              ))}
+              {data.map((row) => {
+                const status = getRowStatus(row);
+                return (
+                  <TableRow key={row.id}>
+                    <TableCell className="font-medium">{row.id}</TableCell>
+                    <TableCell>{row.nombre}</TableCell>
+                    <TableCell>
+                      {row.calif1 === null ? (
+                        <span className="text-accent">NULL</span>
+                      ) : (
+                        row.calif1
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {row.calif2 === null ? (
+                        <span className="text-accent">NULL</span>
+                      ) : (
+                        row.calif2
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {row.calif3 === null ? (
+                        <span className="text-accent">NULL</span>
+                      ) : (
+                        row.calif3
+                      )}
+                    </TableCell>
+                    <TableCell>{row.asistencia}%</TableCell>
+                    <TableCell>
+                      <Badge 
+                        variant={status === "Activo" ? "default" : "destructive"}
+                        className="font-medium"
+                      >
+                        {status}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </div>
