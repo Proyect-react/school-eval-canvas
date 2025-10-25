@@ -6,8 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Upload as UploadIcon, FileSpreadsheet, Database, CheckCircle2, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { Progress } from "@/components/ui/progress";
-import apiService from "@/services/api";
+import { useFileContext } from "@/contexts/FileContext";
 
 export default function Upload() {
   const [file, setFile] = useState<File | null>(null);
@@ -17,6 +16,7 @@ export default function Upload() {
   const [uploadSuccess, setUploadSuccess] = useState(false);
   const [dataStats, setDataStats] = useState<any>(null);
   const { toast } = useToast();
+  const { addFile } = useFileContext();
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -39,46 +39,12 @@ export default function Upload() {
     }
   };
 
-  const handleUpload = async () => {
-    if (!file) return;
-
-    setIsUploading(true);
-    setUploadProgress(0);
-    setUploadSuccess(false);
-
-    // Simular progreso de carga
-    const progressInterval = setInterval(() => {
-      setUploadProgress(prev => {
-        if (prev >= 90) {
-          clearInterval(progressInterval);
-          return prev;
-        }
-        return prev + 10;
-      });
-    }, 300);
-
-    try {
-      const result = await apiService.uploadFile(file);
-
-      clearInterval(progressInterval);
-      setUploadProgress(100);
-
-      if (result.success && result.data) {
-        setDataStats(result.data);
-        setUploadSuccess(true);
-        toast({
-          title: "✓ Carga exitosa",
-          description: `Archivo procesado: ${result.data.total_rows} filas, ${result.data.total_columns} columnas`,
-        });
-      } else {
-        throw new Error(result.error || "Error al cargar el archivo");
-      }
-    } catch (error) {
-      clearInterval(progressInterval);
+  const handleUpload = () => {
+    if (file) {
+      addFile(file);
       toast({
-        title: "Error al cargar",
-        description: error instanceof Error ? error.message : "Error desconocido",
-        variant: "destructive"
+        title: "Archivo guardado",
+        description: `${file.name} está disponible en Datos y Limpieza`,
       });
     } finally {
       setIsUploading(false);
