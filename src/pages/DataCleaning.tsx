@@ -5,6 +5,13 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { 
   Table,
   TableBody,
   TableCell,
@@ -18,9 +25,11 @@ import {
   AlertTriangle, 
   CheckCircle2, 
   RefreshCw,
-  Upload
+  Upload,
+  FileText
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useFileContext } from "@/contexts/FileContext";
 
 const sampleData = [
   { id: 1, nombre: "Juan Pérez", calif1: 85, calif2: 92, calif3: null, asistencia: 95 },
@@ -36,7 +45,9 @@ export default function DataCleaning() {
   const [fillMissing, setFillMissing] = useState(false);
   const [removeOutliers, setRemoveOutliers] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [selectedFile, setSelectedFile] = useState<string>("");
   const { toast } = useToast();
+  const { uploadedFiles } = useFileContext();
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -138,15 +149,63 @@ export default function DataCleaning() {
       <Card className="p-6">
         <div className="mb-4 flex items-center gap-3">
           <div className="rounded-lg bg-primary/10 p-2">
-            <Upload className="h-5 w-5 text-primary" />
+            <FileText className="h-5 w-5 text-primary" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold">Cargar CSV</h3>
-            <p className="text-sm text-muted-foreground">Selecciona un archivo CSV para analizar</p>
+            <h3 className="text-lg font-semibold">Seleccionar Archivo</h3>
+            <p className="text-sm text-muted-foreground">Elige un CSV de tus archivos cargados o sube uno nuevo</p>
           </div>
         </div>
 
         <div className="space-y-4">
+          {uploadedFiles.length > 0 && (
+            <div>
+              <Label htmlFor="file-select" className="mb-2 block">Archivos disponibles</Label>
+              <Select value={selectedFile} onValueChange={(value) => {
+                setSelectedFile(value);
+                const file = uploadedFiles.find(f => f.file.name === value);
+                if (file) {
+                  const reader = new FileReader();
+                  reader.onload = (event) => {
+                    const text = event.target?.result as string;
+                    parseCSV(text);
+                  };
+                  reader.readAsText(file.file);
+                }
+              }}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecciona un archivo CSV" />
+                </SelectTrigger>
+                <SelectContent>
+                  {uploadedFiles
+                    .filter(f => f.file.name.endsWith('.csv'))
+                    .map((f) => (
+                      <SelectItem key={f.file.name} value={f.file.name}>
+                        <div className="flex items-center gap-2">
+                          <FileText className="h-4 w-4" />
+                          <span>{f.file.name}</span>
+                          <span className="text-xs text-muted-foreground">
+                            ({(f.file.size / 1024).toFixed(1)} KB)
+                          </span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">
+                O sube uno nuevo
+              </span>
+            </div>
+          </div>
+
           <div className="flex min-h-[120px] cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-border bg-muted/30 p-6 transition-colors hover:border-primary hover:bg-muted/50">
             <Upload className="mb-2 h-8 w-8 text-muted-foreground" />
             <Label htmlFor="csv-upload" className="cursor-pointer text-center">

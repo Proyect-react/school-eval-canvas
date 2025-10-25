@@ -5,11 +5,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Upload as UploadIcon, FileSpreadsheet, Database } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useFileContext } from "@/contexts/FileContext";
 
 export default function Upload() {
   const [file, setFile] = useState<File | null>(null);
   const [apiEndpoint, setApiEndpoint] = useState("");
   const { toast } = useToast();
+  const { addFile } = useFileContext();
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -24,9 +26,10 @@ export default function Upload() {
 
   const handleUpload = () => {
     if (file) {
+      addFile(file);
       toast({
-        title: "Cargando datos...",
-        description: "Los datos se están procesando en el backend",
+        title: "Archivo guardado",
+        description: `${file.name} está disponible en Datos y Limpieza`,
       });
     }
   };
