@@ -17,8 +17,9 @@ export function StatCard({ title, value, icon: Icon, change, trend = "neutral" }
   };
 
   return (
-    <Card className="p-6 transition-all hover:shadow-lg">
-      <div className="flex items-start justify-between">
+    <Card className="p-6 transition-all hover:shadow-lg hover:scale-105 duration-300 relative overflow-hidden group">
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+      <div className="flex items-start justify-between relative z-10">
         <div className="space-y-2">
           <p className="text-sm font-medium text-muted-foreground">{title}</p>
           <p className="text-3xl font-bold">{value}</p>

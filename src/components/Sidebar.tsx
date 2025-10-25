@@ -22,8 +22,9 @@ export function Sidebar() {
   const location = useLocation();
 
   return (
-    <div className="flex h-screen w-64 flex-col bg-sidebar border-r border-sidebar-border">
-      <div className="flex h-16 items-center gap-2 border-b border-sidebar-border px-6">
+    <div className="flex h-screen w-64 flex-col bg-sidebar border-r border-sidebar-border relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-br from-sidebar-background via-sidebar-background to-sidebar-accent/30 opacity-50"></div>
+      <div className="flex h-16 items-center gap-2 border-b border-sidebar-border px-6 relative z-10">
         <Brain className="h-8 w-8 text-sidebar-primary" />
         <div>
           <h1 className="text-lg font-bold text-sidebar-foreground">EduML</h1>
@@ -31,7 +32,7 @@ export function Sidebar() {
         </div>
       </div>
 
-      <nav className="flex-1 space-y-1 p-4">
+      <nav className="flex-1 space-y-1 p-4 relative z-10">
         {navigation.map((item) => {
           const isActive = location.pathname === item.href;
           return (
@@ -52,7 +53,7 @@ export function Sidebar() {
         })}
       </nav>
 
-      <div className="border-t border-sidebar-border p-4">
+      <div className="border-t border-sidebar-border p-4 relative z-10">
         <div className="rounded-lg bg-sidebar-accent/30 p-3">
           <p className="text-xs font-medium text-sidebar-foreground">Backend conectado</p>
           <p className="mt-1 text-xs text-sidebar-foreground/60">API Externa activa</p>
