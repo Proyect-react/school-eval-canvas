@@ -13,6 +13,9 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        sans: ['Inter', 'sans-serif'],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -107,6 +110,11 @@ export default {
       },
       backgroundSize: {
         "300%": "300%",
+        "400%": "400%",
+      },
+      boxShadow: {
+        'soft': '0 2px 8px rgba(0, 0, 0, 0.08)',
+        'soft-lg': '0 8px 24px rgba(0, 0, 0, 0.12)',
       },
     },
   },
